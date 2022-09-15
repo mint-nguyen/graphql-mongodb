@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { CreateLessonInput } from './lesson.input';
+import { AssignStudentType } from './assign-student.type';
 
 @Injectable()
 export class LessonService {
@@ -29,6 +30,16 @@ export class LessonService {
       endDate,
     });
 
+    return this.lessonRepository.save(lesson);
+  }
+
+  async assignStudentsToLesson(
+    assignStudent: AssignStudentType,
+  ): Promise<Lesson> {
+    const { lessonId, studentIds } = assignStudent;
+
+    const lesson = await this.lessonRepository.findOneBy({ id: lessonId });
+    lesson.students = [...lesson.students, ...studentIds];
     return this.lessonRepository.save(lesson);
   }
 }
